@@ -1,0 +1,23 @@
+# Render blueprint: one free web service running the Node.js server.
+# The free plan has no persistent disk, so the demo data is rebuilt on each restart.
+services:
+  - type: web
+    name: kora-erp
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@kora.test
+      - key: ADMIN_PASSWORD
+        value: "Demo#12345"
+      - key: SEED_DEMO
+        value: "true"

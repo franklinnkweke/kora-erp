@@ -64,6 +64,8 @@ docker run -p 3000:3000 -v kora-data:/data \
 
 Settings are listed in `.env.example`.
 
+Deploy to Render: `render.yaml` describes the service (Node 22, build, start, health check, generated JWT secret). Create a Blueprint on Render from this repo.
+
 ## Tests and CI/CD
 
 ```bash
