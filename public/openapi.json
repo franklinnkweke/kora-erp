@@ -1,0 +1,1740 @@
+{
+ "openapi": "3.0.3",
+ "info": {
+  "title": "Kora ERP API",
+  "version": "1.0.0",
+  "description": "REST API for stock, sales, purchasing, invoicing and payments. Money is in minor units (kobo): 150000 = ₦1,500.00. Admin can do everything."
+ },
+ "servers": [
+  {
+   "url": "/api"
+  }
+ ],
+ "security": [
+  {
+   "bearer": []
+  }
+ ],
+ "paths": {
+  "/auth/login": {
+   "post": {
+    "tags": [
+     "Auth"
+    ],
+    "summary": "Sign in and get a JWT",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Session"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Login"
+       }
+      }
+     }
+    },
+    "security": []
+   }
+  },
+  "/me": {
+   "get": {
+    "tags": [
+     "Auth"
+    ],
+    "summary": "The signed-in user",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/users": {
+   "get": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "List users (roles: admin)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "Add a user (roles: admin)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserIn"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/users/{id}": {
+   "patch": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "Change role or disable (roles: admin)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "role": {
+          "type": "string"
+         },
+         "active": {
+          "type": "boolean"
+         }
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/products": {
+   "get": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "List products with on-hand, reserved and available stock",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "low_stock",
+      "in": "query",
+      "schema": {
+       "type": "boolean"
+      }
+     },
+     {
+      "name": "all",
+      "in": "query",
+      "schema": {
+       "type": "boolean"
+      }
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Create a product (roles: warehouse)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProductIn"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/products/{id}": {
+   "get": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Get a product",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "patch": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Update a product (roles: warehouse)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProductIn"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/products/{id}/adjust": {
+   "post": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Adjust stock (cannot go below zero) (roles: warehouse)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "required": [
+         "qty",
+         "note"
+        ],
+        "properties": {
+         "qty": {
+          "type": "integer"
+         },
+         "note": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/products/{id}/moves": {
+   "get": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Stock movement history",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/customers": {
+   "get": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "List customers with balance owed",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "Add a customer (roles: sales, accounts)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PartnerIn"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/customers/{id}": {
+   "get": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "Get a customer",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "patch": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "Update a customer (roles: sales, accounts)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PartnerIn"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/suppliers": {
+   "get": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "List suppliers",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "Add a supplier (roles: warehouse, accounts)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PartnerIn"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/suppliers/{id}": {
+   "get": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "Get a supplier",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "patch": {
+    "tags": [
+     "Partners"
+    ],
+    "summary": "Update a supplier (roles: warehouse, accounts)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PartnerIn"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/sales-orders": {
+   "get": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "List sales orders",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "partner_id",
+      "in": "query",
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Create a draft sales order (roles: sales)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrderIn"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/sales-orders/{id}": {
+   "get": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Get an order with lines and allowed next steps",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "patch": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Edit a draft order (roles: sales)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrderIn"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/sales-orders/{id}/confirm": {
+   "post": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Confirm: checks stock and credit limit, reserves stock (roles: sales)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/sales-orders/{id}/deliver": {
+   "post": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Deliver: takes stock out (roles: warehouse)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/sales-orders/{id}/invoice": {
+   "post": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Issue the invoice with VAT (roles: accounts)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/sales-orders/{id}/cancel": {
+   "post": {
+    "tags": [
+     "Sales"
+    ],
+    "summary": "Cancel a draft or confirmed order (roles: sales)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/purchase-orders": {
+   "get": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "List purchase orders",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "Create a draft purchase order (roles: warehouse, accounts)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrderIn"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/purchase-orders/{id}": {
+   "get": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "Get a purchase order",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "patch": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "Edit a draft purchase order (roles: warehouse, accounts)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrderIn"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/purchase-orders/{id}/place": {
+   "post": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "Place with the supplier (roles: accounts)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/purchase-orders/{id}/receive": {
+   "post": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "Receive goods: adds stock (roles: warehouse)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/purchase-orders/{id}/cancel": {
+   "post": {
+    "tags": [
+     "Purchasing"
+    ],
+    "summary": "Cancel (roles: warehouse, accounts)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/invoices": {
+   "get": {
+    "tags": [
+     "Invoices"
+    ],
+    "summary": "List invoices",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "customer_id",
+      "in": "query",
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/invoices/{id}": {
+   "get": {
+    "tags": [
+     "Invoices"
+    ],
+    "summary": "Invoice with lines and payments",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/invoices/{id}/payments": {
+   "post": {
+    "tags": [
+     "Invoices"
+    ],
+    "summary": "Record a payment (cannot exceed the balance) (roles: accounts)",
+    "responses": {
+     "201": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PaymentIn"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/dashboard": {
+   "get": {
+    "tags": [
+     "Reports"
+    ],
+    "summary": "Key numbers, low stock, best sellers, monthly sales",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/reports/stock": {
+   "get": {
+    "tags": [
+     "Reports"
+    ],
+    "summary": "Stock valuation",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/reports/receivables": {
+   "get": {
+    "tags": [
+     "Reports"
+    ],
+    "summary": "Receivables aging (roles: accounts, sales)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/audit": {
+   "get": {
+    "tags": [
+     "Reports"
+    ],
+    "summary": "Activity log (roles: admin)",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/health": {
+   "get": {
+    "tags": [
+     "Auth"
+    ],
+    "summary": "Health check",
+    "responses": {
+     "200": {
+      "description": "OK"
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "409": {
+      "$ref": "#/components/responses/Error"
+     }
+    },
+    "security": []
+   }
+  }
+ },
+ "components": {
+  "securitySchemes": {
+   "bearer": {
+    "type": "http",
+    "scheme": "bearer",
+    "bearerFormat": "JWT"
+   }
+  },
+  "responses": {
+   "Error": {
+    "description": "Error",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "error": {
+         "type": "string"
+        },
+        "details": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "schemas": {
+   "Login": {
+    "type": "object",
+    "required": [
+     "email",
+     "password"
+    ],
+    "properties": {
+     "email": {
+      "type": "string",
+      "example": "admin@kora.test"
+     },
+     "password": {
+      "type": "string",
+      "example": "Demo#12345"
+     }
+    }
+   },
+   "Session": {
+    "type": "object",
+    "properties": {
+     "token": {
+      "type": "string"
+     },
+     "user": {
+      "type": "object"
+     }
+    }
+   },
+   "UserIn": {
+    "type": "object",
+    "required": [
+     "email",
+     "name",
+     "role",
+     "password"
+    ],
+    "properties": {
+     "email": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string",
+      "enum": [
+       "admin",
+       "sales",
+       "warehouse",
+       "accounts"
+      ]
+     },
+     "password": {
+      "type": "string",
+      "minLength": 8
+     }
+    }
+   },
+   "ProductIn": {
+    "type": "object",
+    "required": [
+     "sku",
+     "name",
+     "price",
+     "cost"
+    ],
+    "properties": {
+     "sku": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "unit": {
+      "type": "string"
+     },
+     "price": {
+      "type": "integer"
+     },
+     "cost": {
+      "type": "integer"
+     },
+     "reorder_level": {
+      "type": "integer"
+     },
+     "active": {
+      "type": "boolean"
+     }
+    }
+   },
+   "PartnerIn": {
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "email": {
+      "type": "string"
+     },
+     "phone": {
+      "type": "string"
+     },
+     "address": {
+      "type": "string"
+     },
+     "credit_limit": {
+      "type": "integer"
+     }
+    }
+   },
+   "OrderIn": {
+    "type": "object",
+    "required": [
+     "partner_id",
+     "lines"
+    ],
+    "properties": {
+     "partner_id": {
+      "type": "integer"
+     },
+     "notes": {
+      "type": "string"
+     },
+     "lines": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "required": [
+        "product_id",
+        "qty"
+       ],
+       "properties": {
+        "product_id": {
+         "type": "integer"
+        },
+        "qty": {
+         "type": "integer"
+        },
+        "unit_price": {
+         "type": "integer"
+        }
+       }
+      }
+     }
+    }
+   },
+   "PaymentIn": {
+    "type": "object",
+    "required": [
+     "amount",
+     "method"
+    ],
+    "properties": {
+     "amount": {
+      "type": "integer"
+     },
+     "method": {
+      "type": "string",
+      "enum": [
+       "cash",
+       "bank_transfer",
+       "card",
+       "pos"
+      ]
+     },
+     "reference": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}
